@@ -1,0 +1,122 @@
+1248
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1248
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1249
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1249
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1249
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1249
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1249
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+1248
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+1269
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+------------------------------
+functionName : Function_LogLookUp
+LogType      : all
+Significance : all
+StartTime    : 2019-10-22 00:00:00
+EndTime      : 2019-10-25 13:25:51
+start        : 0
+length       : 10
+draw         : 1
+------------------------------
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+1248
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+0
+GET
+
+GetFormInput succeeded
+1269
+POST
+application/x-www-form-urlencoded
+POST recognized
+Calling PostFormInput
+PostFormInput succeeded
+------------------------------
+functionName : Function_LogLookUp
+LogType      : all
+Significance : all
+StartTime    : 2019-10-22 00:00:00
+EndTime      : 2019-10-25 13:25:51
+start        : 0
+length       : 10
+draw         : 1
+------------------------------

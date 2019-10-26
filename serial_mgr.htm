@@ -1,0 +1,1151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+	@descript: 串口设备管理
+	@author: chenxu
+	@at 20151220
+-->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript">
+</script>
+
+<title>串口设备</title>
+
+<link rel="stylesheet" type="text/css" href="css/switch.css">
+<link rel="stylesheet" href="./css/validate_style.css" type="text/css" media="all" />
+<style>
+	.field_width{width:131px;}
+	#btnBatset {width:80px; color:#FFF; background:#1b72af; overflow:visible; padding:0px 15px;margin-right:5px;font-family:Arial; font-size:10px;"}
+</style>
+
+<script src="./js/jquery-1.11.3.min.js"></script>
+<script src="./js/jquery.form.js"></script>
+<script src="./js/Validform_v5.3.2_min.js"></script>
+<script src="./js/Validform_Datatype.js"></script>
+<script src="./js/jquery.cookie.js"></script>
+<script src="./js/login.js"></script>
+
+<script type="text/javascript">  
+$(document).ready(function(){ 
+    var validform_AddMountPoint;
+    var validform_AddDev;
+    var validform_AddParam;
+        
+	check_login_status(); 		
+
+	list_all_mount_point(); //在页面加载时列出所有挂载点的信息
+	list_all_devs(); //在页面加载时列出所有设备的信息
+	list_all_params(); //在页面加载时列出所有设备参数信息	
+	
+	
+	/////////////////////////////////////////////////
+	//挂载点操作
+	/////////////////////////////////////////////////
+	$("#btnAddMountPoint").click(function() { 
+    	$(function(){
+    	    $("#MountPoint0").attr("disabled",false);  //在提交数据前需要重新设置为true
+    	    
+    		validform_AddMountPoint=$("#AddMountPoint").Validform({
+    			tiptype:3,
+    			showAllError:true,
+    			postonce:true,
+    			ajaxPost:true,
+    			beforeSubmit:function(curform){
+    					curform.ajaxSubmit({
+    					type:'post',
+    					datatype:'json',
+    					cache:false,
+    					url:'cgi-bin/serial_actor.cgi',
+    					beforeSubmit: function(){
+    						
+    					},
+    					error: function(){
+    						alert("操作失败!");
+    					},
+    					success: function(){
+            				alert("操作成功!");					
+            				$("#mount_point_table_body").empty();//先清除设备列表
+            				list_all_mount_point(); //重新获取													
+							return false;
+    					}
+    			    });
+    			    return false;
+    		    }				
+    		})
+        })	    	    
+	});
+	
+	$("#btnCanelMountPoint").click(function() {
+    	$("#MountPoint0 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#MountPoint0").find("option[value='CH1']").attr("selected", true);  
+        $("#MountPoint0").attr("disabled",false);
+    	//$("#BusID").attr("value", "");
+    
+    	$("#Baudrate option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#Baudrate").find("option[value='9600']").attr("selected", true); 	
+    	
+    	
+    	$("#DataBits option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#DataBits").find("option[value='8']").attr("selected", true); 
+    	
+    	$("#CheckBits option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#CheckBits").find("option[value='Even']").attr("selected", true); 
+    	
+    	$("#StopBits option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#StopBits").find("option[value='1']").attr("selected", true); 		
+    	
+        //将设备添加的表单动作置为Add
+        $("#Action0").attr("value", 'MountPointAdd');
+    	
+    	$('#AddMountPoint')[0].reset();
+		return false;
+    });	
+            
+    /////////////////////////////////////////////////
+    //设备操作
+	/////////////////////////////////////////////////	
+	$("#btnAddDev").click(function() {	    
+    	$(function(){
+    	    $("#MountPoint1").attr("disabled",false);  //在提交数据前需要重新设置为true
+    	    $("#DevID1").attr("disabled",false);  //在提交数据前需要重新设置为true
+    	    $("#DevType1").attr("disabled",false);  //在提交数据前需要重新设置为true 
+    	    
+    		validform_AddDev=$("#AddDev").Validform({
+    			tiptype:3,
+    			showAllError:true,
+    			postonce:true,
+    			ajaxPost:true,
+    			beforeSubmit:function(curform){
+    					curform.ajaxSubmit({
+    					type:'post',
+    					datatype:'json',
+    					cache:false,
+    					url:'cgi-bin/serial_actor.cgi',
+    					beforeSubmit: function(){
+    						
+    					},
+    					error: function(){
+    						alert("操作失败!");
+    					},
+    					success: function(){
+            				alert("操作成功!");					
+            				$("#devlist_table_body").empty();//先清除设备列表
+            				list_all_devs(); //重新获取														
+							return false;
+    					}
+    			    });
+    			    return false;
+    		    }				
+    		})
+        })	    	    
+	});
+	
+	$("#btnCanelDev").click(function() {
+    	$("#MountPoint1 option").each(function() { 
+    		this.removeAttribute("selected");		
+    	})
+    	$("#MountPoint1").find("option[value='CH1']").attr("selected", true);  
+        $("#MountPoint1").attr("disabled",false);
+        
+    	$("#DevName1").attr("value", "");
+    	$("#DevType1").attr("value", "");
+    	$("#DevType1").attr("disabled",false);
+    
+    	$("#Protocal1 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#Protocal1").find("option[value='Modbus']").attr("selected", true); 	
+    		
+    	$("#DevID1").attr("value", "");
+    	$("#DevID1").attr("disabled",false);
+    	
+    	$("#DevName1").attr("value", "");
+    	$("#DevAddr1").attr("value", "");
+    	$("#NoAck1").attr("value", "");
+    
+        //将设备添加的表单动作置为Add
+        $("#Action1").attr("value", 'AddDev');	    
+    
+    	$('#AddDev')[0].reset();
+		return false;
+    });	
+   	
+    /////////////////////////////////////////////////
+    //变量操作	
+	/////////////////////////////////////////////////	
+	$("#btnAddParam").click(function() { 
+    	$(function(){
+    	    $("#MountPoint2").attr("disabled",false);  //在提交数据前需要重新设置为true
+    	    $("#DevID2").attr("disabled",false);  //在提交数据前需要重新设置为true
+    	    $("#DevType2").attr("disabled",false);  //在提交数据前需要重新设置为true 
+    	    $("#ID2").attr("disabled",false);  //在提交数据前需要重新设置为true 
+    	    
+    		validform_AddParam=$("#AddParam").Validform({
+    			tiptype:3,
+    			showAllError:true,
+    			postonce:true,
+    			ajaxPost:true,
+    			beforeSubmit:function(curform){
+    					curform.ajaxSubmit({
+    					type:'post',
+    					datatype:'json',
+    					cache:false,
+    					url:'cgi-bin/serial_actor.cgi',
+    					beforeSubmit: function(){
+    						
+    					},
+    					error: function(){
+    						alert("操作失败!");
+    					},
+    					success: function(){
+        				alert("操作成功!");					
+        				$("#param_table_body").empty();//先清除设备列表
+        				list_all_params(); //重新获取													
+							return false;
+    					}
+    			    });
+    			    return false;
+    		    }				
+    		})
+        })	    	    
+	});
+	
+	$("#btnCanelParam").click(function() {
+    	$("#MountPoint2 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#MountPoint2").find("option[value='CH1']").attr("selected", true);  
+        $("#MountPoint2").attr("disabled",false);
+    
+        $("#DevName2").attr("value", "");
+        
+        $("#DevType2").attr("value", "");
+        $("#DevType2").attr("disabled",false);
+        
+        $("#DevID2").attr("value", "");
+        $("#DevID2").attr("disabled",false);
+            
+    	$("#Name2").attr("value", "");
+    	$("#ID2").attr("value", "");
+    	$("#ID2").attr("disabled",false);
+    
+    	$("#RWType2 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#RWType2").find("option[value='R']").attr("selected", true);  
+    
+    	$("#DataType2 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#DataType2").find("option[value='Char']").attr("selected", true); 
+    	
+    	$("#DataPrecision2").attr("value", "");
+    	$("#RegAddr2").attr("value", "");	
+    	
+    	$("#AlarmEnable2 option").each(function() { 
+    		this.removeAttribute("selected");
+    	})
+    	$("#AlarmEnable2").find("option[value='False']").attr("selected", true); 	
+    
+    	$("#AlarmUpper2").attr("value", "");
+    	$("#AlarmFloor2").attr("value", "");	
+    	$("#SampleFrequency2").attr("value","");
+    			
+        //将设备添加的表单动作置为Add
+        $("#Action2").attr("value", 'AddParam');     
+    	
+    	$('#AddParam')[0].reset();
+		return false;
+    });	
+         
+	/////////////////////////////////////////////////						
+}) 
+
+function list_all_mount_point(){  
+	$.ajax({
+   type:"GET",
+   url:"./cfg/SerialDev.xml",
+   dataType:"xml",
+   error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("Can't load Dev information from the system. XMLHttpRequest.status=" 
+					+ XMLHttpRequest.status + ",XMLHttpRequest.readyState="+XMLHttpRequest.readyState);
+				},
+   success:function(DevXML){
+		$(DevXML).find("SerialDev>MountPoint").each(function(){
+		
+		var MountPoint = $(this).attr("Name");//找出挂载点
+		//var BusID =  $(this).attr("BusID");
+		var Baudrate =  $(this).attr("Baudrate");
+		var DataBits =  $(this).attr("DataBits");
+		var CheckBits =  $(this).attr("CheckBits");
+		var StopBits =  $(this).attr("StopBits");
+		
+		var newRow = "<tr>"
+				   + "<th>" + MountPoint + "</th>"
+				 //  + "<th>" + BusID + "</th>"		      
+				   + "<th>" + Baudrate + "</th>"
+				   + "<th>" + DataBits + "</th>"
+				   + "<th>" + CheckBits + "</th>"
+				   + "<th>" + StopBits + "</th>"
+				   + "<th>" + "<button class='button_bdeep' id='btnEdit' style='margin-left:10px;' onclick='doMountPointEdit(this)'>编辑</button>"
+				   + "<button class='button_bdeep' id='btnRemove' style='margin-left:10px;' onclick='doMountPointRemove(this)'>移除</button>" + "</th>"
+				   + "</tr>";
+				   
+		$("#mount_point_table_body").append(newRow);						  				  
+	    })
+    }
+  })
+  return false;    
+} 
+
+
+function list_all_devs(){  
+	$.ajax({
+   type:"GET",
+   url:"./cfg/SerialDev.xml",
+   dataType:"xml",
+   error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("Can't load Dev information from the system. XMLHttpRequest.status=" 
+					+ XMLHttpRequest.status + ",XMLHttpRequest.readyState="+XMLHttpRequest.readyState);
+				},
+   success:function(DevXML){
+		$(DevXML).find("SerialDev>MountPoint").each(function(){
+		
+		var MountPoint = $(this).attr("Name");//找出挂载点
+		
+		$(this).find("Dev").each(function(){ //找出设备的属性
+			var DevName = $(this).attr("DevName");
+			
+			var DevType = $(this).attr("DevType");
+			var Protocal = $(this).attr("Protocal");	
+			var DevID = $(this).attr("DevID");	
+			var DevAddr = $(this).attr("DevAddr");	
+			var NoAck = $(this).attr("NoAck");	
+			
+			//alert("MountPoint=" + MountPoint + ";DevType=" + DevType + ";DevID=" + DevID);				
+			var newRow = "<tr>"
+					   + "<th>" + MountPoint + "</th>"
+					   + "<th>" + DevName + "</th>"		      
+					   + "<th>" + DevType + "</th>"
+					   + "<th>" + Protocal + "</th>"
+					   + "<th>" + DevID + "</th>"
+					   + "<th>" + DevAddr + "</th>"
+					   + "<th>" + NoAck + "</th>"
+					   + "<th>" + "<button class='button_bdeep' id='btnEdit' style='margin-left:10px;' onclick='doDevEdit(this)'>编辑</button>"
+					   + "<button class='button_bdeep' id='btnRemove' style='margin-left:10px;' onclick='doDevRemove(this)'>移除</button>" + "</th>"
+					   + "</tr>";
+					   
+			$("#devlist_table_body").append(newRow);						  									
+		})		   
+	  })	  
+	}
+  })
+  return false;    
+} 
+
+
+function list_all_params(){  
+	$.ajax({
+   type:"GET",
+   url:"./cfg/SerialDev.xml",
+   dataType:"xml",
+   error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("Can't load Dev information from the system. XMLHttpRequest.status=" 
+					+ XMLHttpRequest.status + ",XMLHttpRequest.readyState="+XMLHttpRequest.readyState);
+				},
+   success:function(DevXML){
+		$(DevXML).find("SerialDev>MountPoint").each(function(){
+		
+		var MountPoint = $(this).attr("Name");//找出挂载点
+		
+		$(this).find("Dev").each(function(){ //找出设备的属性
+			var DevName = $(this).attr("DevName");
+			var DevType = $(this).attr("DevType");
+			var DevID = $(this).attr("DevID");
+			
+			//alert("DevName=" + DevName + ";DevType=" + DevType + ";DevID=" + DevID);			
+			$(this).find("Param").each(function(){ //找出参数的属性
+				var Name = $(this).find("Name").text();
+				var ID = $(this).find("ID").text();
+				var DataType = $(this).find("DataType").text();
+				var RWType = $(this).find("RWType").text();
+				var RegAddr = $(this).find("RegAddr").text();	
+				var DataPrecision = $(this).find("DataPrecision").text();
+				var AlarmEnable = $(this).find("AlarmEnable").text();
+				var AlarmUpper = $(this).find("AlarmUpper").text();
+				var AlarmFloor = $(this).find("AlarmFloor").text();
+				var SampleFrequency = $(this).find("SampleFrequency").text();							
+
+				var newRow = "<tr>"
+						   + "<th>" + MountPoint + "</th>"
+						   + "<th>" + DevName + "</th>"		      
+						   + "<th>" + DevType + "</th>"	
+						   + "<th>" + DevID + "</th>"	
+						   + "<th>" + Name + "</th>"
+						   + "<th>" + ID + "</th>"
+						   + "<th>" + RWType + "</th>"
+						   + "<th>" + DataType + "</th>"
+						   + "<th>" + DataPrecision + "</th>"
+						   + "<th>" + RegAddr + "</th>"
+						   + "<th>" + AlarmEnable + "</th>"
+						   + "<th>" + AlarmUpper + "</th>"
+						   + "<th>" + AlarmFloor + "</th>"
+						   + "<th>" + SampleFrequency + "</th>"
+						   + "<th>" + "<button class='button_bdeep' id='btnEdit' style='margin-left:10px;' onclick='doParamEdit(this)'>编辑</button>"
+						   + "<button class='button_bdeep' id='btnRemove' style='margin-left:10px;' onclick='doParamRemove(this)'>移除 </button>" + "</th>"
+						   + "</tr>";
+						   
+				$("#param_table_body").append(newRow);						  				
+		  })		  						
+		})		
+	  })	  
+	}
+  })
+  return false;    
+}
+
+/////////////////////////////////////////////////
+//挂载点操作
+/////////////////////////////////////////////////
+function doMountPointEdit(obj)
+{
+	console.log("doMountPointEdit");
+
+    $('#AddMountPoint')[0].reset();
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#mount_point_table_body tr:eq("+$rowIndex+")");
+
+	var MountPoint = tr.find("th").eq(0).text();
+	//var BusID =  tr.find("th").eq(1).text();
+	var Baudrate =  tr.find("th").eq(2).text();
+	var DataBits =  tr.find("th").eq(3).text();
+	var CheckBits =  tr.find("th").eq(4).text();
+	var StopBits =  tr.find("th").eq(5).text();		
+	
+	//加载到编辑窗口 
+	$("#MountPoint0 option").each(function() { 
+		this.removeAttribute("selected");
+		//console.log($(this).text());
+	})
+	$("#MountPoint0").find("option[value='"+$.trim(MountPoint)+"']").attr("selected", true);  
+    $("#MountPoint0").attr("disabled",true);  //在提交数据前需要重新设置为true
+
+	//$("#BusID").attr("value", BusID);
+
+	$("#Baudrate option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#Baudrate").find("option[value='"+$.trim(Baudrate)+"']").attr("selected", true); 	
+	
+	
+	$("#DataBits option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#DataBits").find("option[value='"+$.trim(DataBits)+"']").attr("selected", true); 
+	
+	$("#CheckBits option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#CheckBits").find("option[value='"+$.trim(CheckBits)+"']").attr("selected", true); 
+	
+	$("#StopBits option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#StopBits").find("option[value='"+$.trim(StopBits)+"']").attr("selected", true); 		
+	
+    //将设备添加的表单动作置为Edit
+    $("#Action0").attr("value", 'MountPointEdit');	
+	
+}
+function doMountPointRemove(obj)
+{
+	console.log("doMountPointRemove");
+	
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#mount_point_table_body tr:eq("+$rowIndex+")");
+
+	var MountPoint = tr.find("th").eq(0).text();
+	//var BusID =  tr.find("th").eq(1).text();
+	var Baudrate =  tr.find("th").eq(2).text();
+	var DataBits =  tr.find("th").eq(3).text();
+	var CheckBits =  tr.find("th").eq(4).text();
+	var StopBits =  tr.find("th").eq(5).text();	
+		
+	console.log("MountPoint = %s", MountPoint);
+	//console.log("BusID = %s", BusID);
+	console.log("Baudrate = %s", Baudrate);
+	console.log("DataBits = %s", DataBits);
+	console.log("CheckBits = %s", CheckBits);	
+	console.log("StopBits = %s", StopBits);	
+
+	// 下发参数到指定的cgi		
+	$.ajax({
+		type: "POST",
+		cache:false,
+		url: "cgi-bin/serial_actor.cgi",
+		contentType:"application/x-www-form-urlencoded",
+		data: "Action="+"MountPointRemove"
+		    +"&MountPoint="+MountPoint
+			//+"&BusID="+BusID
+			+"&Baudrate="+Baudrate
+			+"&DataBits="+DataBits
+			+"&CheckBits="+CheckBits
+			+"&StopBits="+StopBits,
+		dataType: "text",
+		success: function(data){
+				//console.log("Returned data is: %s",data)
+				alert("操作成功！");	
+				$("#mount_point_table_body").empty();//先清除设备列表
+				list_all_mount_point(); //重新获取列表
+				$("#devlist_table_body").empty();
+				list_all_devs();
+				$("#param_table_body").empty();
+				list_all_params();
+				return false;	        
+			},
+		error:function(data){	    	 		
+				//console.log("Returned data is: %s",data)
+				alert("操作失败！");    
+		}    					
+	}); 	
+}
+/////////////////////////////////////////////////
+//设备操作
+/////////////////////////////////////////////////	
+function doDevEdit(obj)
+{
+	console.log("doDevEdit");
+
+    $('#AddDev')[0].reset();
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#devlist_table_body tr:eq("+$rowIndex+")");
+
+    var MountPoint = tr.find("th").eq(0).text();
+    var DevName = tr.find("th").eq(1).text();
+    var DevType = tr.find("th").eq(2).text();
+    var Protocal = tr.find("th").eq(3).text();
+    var DevID = tr.find("th").eq(4).text();
+    var DevAddr = tr.find("th").eq(5).text();
+    var NoAck = tr.find("th").eq(6).text();
+		 
+	$("#MountPoint1 option").each(function() { 
+		this.removeAttribute("selected");
+		//console.log($(this).text());
+	})
+	$("#MountPoint1").find("option[value='"+$.trim(MountPoint)+"']").attr("selected", true);  
+    $("#MountPoint1").attr("disabled",true);  //在提交数据前需要重新设置为true
+    
+	$("#DevName1").attr("value", DevName);
+	$("#DevType1").attr("value", DevType);
+	$("#DevType1").attr("disabled",true);  //在提交数据前需要重新设置为true
+
+	$("#Protocal1 option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#Protocal1").find("option[value='"+$.trim(Protocal)+"']").attr("selected", true); 	
+		
+	$("#DevID1").attr("value", DevID);
+	$("#DevID1").attr("disabled",true);  //在提交数据前需要重新设置为true
+	
+	$("#DevName1").attr("value", DevName);
+	$("#DevAddr1").attr("value", DevAddr);
+	$("#NoAck1").attr("value", NoAck);
+
+    //将设备添加的表单动作置为Edit
+    $("#Action1").attr("value", 'EditDev');		
+}
+function doDevRemove(obj)
+{
+	console.log("doDevRemove");
+	
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#devlist_table_body tr:eq("+$rowIndex+")");
+
+    var MountPoint = tr.find("th").eq(0).text();
+    var DevName = tr.find("th").eq(1).text();
+    var DevType = tr.find("th").eq(2).text();
+    var Protocal = tr.find("th").eq(3).text();
+    var DevID = tr.find("th").eq(4).text();
+    var DevAddr = tr.find("th").eq(5).text();
+    var NoAck = tr.find("th").eq(6).text();
+
+	// 下发参数到指定的cgi		
+	$.ajax({
+		type: "POST",
+		cache:false,
+		url: "cgi-bin/serial_actor.cgi",
+		contentType:"application/x-www-form-urlencoded",
+		data: "Action="+"DevRemove"
+		    +"&MountPoint="+MountPoint
+			+"&DevName="+DevName
+			+"&DevType="+DevType
+			+"&Protocal="+Protocal
+			+"&DevID="+DevID
+			+"&DevAddr="+DevAddr
+			+"&NoAck="+NoAck,
+		dataType: "text",
+		success: function(data){
+				//console.log("Returned data is: %s",data)
+				alert("操作成功！");	
+				$("#devlist_table_body").empty();//先清除设备列表
+				list_all_devs(); //重新获取列表
+				$("#param_table_body").empty();
+				list_all_params();
+				return false;	        
+			},
+		error:function(data){	    	 		
+				//console.log("Returned data is: %s",data)
+				alert("操作失败！");    
+		}    					
+	}); 	
+}    
+     
+/////////////////////////////////////////////////
+//变量操作	
+/////////////////////////////////////////////////    
+function doParamEdit(obj)
+{
+	console.log("doParamEdit");
+	
+    $('#AddParam')[0].reset();
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#param_table_body tr:eq("+$rowIndex+")");
+
+    var MountPoint      = tr.find("th").eq(0).text();
+    var DevName         = tr.find("th").eq(1).text();
+    var DevType         = tr.find("th").eq(2).text();
+    var DevID           = tr.find("th").eq(3).text();    
+    var Name            = tr.find("th").eq(4).text();
+    var ID              = tr.find("th").eq(5).text();
+    var RWType          = tr.find("th").eq(6).text();
+    var DataType        = tr.find("th").eq(7).text();
+    var DataPrecision   = tr.find("th").eq(8).text();
+    var RegAddr         = tr.find("th").eq(9).text();	
+    var AlarmEnable     = tr.find("th").eq(10).text();
+    var AlarmUpper      = tr.find("th").eq(11).text();
+    var AlarmFloor      = tr.find("th").eq(12).text();
+    var SampleFrequency = tr.find("th").eq(13).text();
+
+
+	$("#MountPoint2 option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#MountPoint2").find("option[value='"+$.trim(MountPoint)+"']").attr("selected", true);  
+    $("#MountPoint2").attr("disabled",true);  //在提交数据前需要重新设置为true
+
+	//$("#DevName2 option").each(function() { 
+		//this.removeAttribute("selected");
+	//})
+	//$("#DevName2").find("option[value='"+$.trim(DevName)+"']").attr("selected", true);  
+
+    $("#DevName2").attr("value", DevName);
+    
+    $("#DevType2").attr("value", DevType);
+    $("#DevType2").attr("disabled",true);  //在提交数据前需要重新设置为true
+    
+    $("#DevID2").attr("value", DevID);
+    $("#DevID2").attr("disabled",true);  //在提交数据前需要重新设置为true
+        
+	$("#Name2").attr("value", Name);
+	$("#ID2").attr("value", ID);
+	$("#ID2").attr("disabled",true);  //在提交数据前需要重新设置为true
+
+	$("#RWType2 option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#RWType2").find("option[value='"+$.trim(RWType)+"']").attr("selected", true);  
+
+	$("#DataType2 option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#DataType2").find("option[value='"+$.trim(DataType)+"']").attr("selected", true); 
+	
+	$("#DataPrecision2").attr("value", DataPrecision);
+	$("#RegAddr2").attr("value", RegAddr);	
+	
+	$("#AlarmEnable2 option").each(function() { 
+		this.removeAttribute("selected");
+	})
+	$("#AlarmEnable2").find("option[value='"+$.trim(AlarmEnable)+"']").attr("selected", true); 	
+
+	$("#AlarmUpper2").attr("value", AlarmUpper);
+	$("#AlarmFloor2").attr("value", AlarmFloor);	
+	$("#SampleFrequency2").attr("value", SampleFrequency);
+			
+    //将设备添加的表单动作置为Edit
+    $("#Action2").attr("value", 'EditParam');		
+}
+function doParamRemove(obj)
+{
+	console.log("doParamRemove");
+
+	// 获取表格行号	
+	var temp_index = obj.parentNode.parentNode.rowIndex;	
+	var $rowIndex = temp_index - 1;
+	//console.log("Row index is %d",$rowIndex);
+
+	// 获取该行的内容
+	var tr = $("#param_table_body tr:eq("+$rowIndex+")");
+
+    var MountPoint      = tr.find("th").eq(0).text();
+    var DevName         = tr.find("th").eq(1).text();
+    var DevType         = tr.find("th").eq(2).text();
+    var DevID           = tr.find("th").eq(3).text();    
+    var Name            = tr.find("th").eq(4).text();
+    var ID              = tr.find("th").eq(5).text();
+    var RWType          = tr.find("th").eq(6).text();
+    var DataType        = tr.find("th").eq(7).text();
+    var DataPrecision   = tr.find("th").eq(8).text();
+    var RegAddr         = tr.find("th").eq(9).text();	
+    var AlarmEnable     = tr.find("th").eq(10).text();
+    var AlarmUpper      = tr.find("th").eq(11).text();
+    var AlarmFloor      = tr.find("th").eq(12).text();
+    var SampleFrequency = tr.find("th").eq(13).text();
+
+	// 下发参数到指定的cgi		
+	$.ajax({
+		type: "POST",
+		cache:false,
+		url: "cgi-bin/serial_actor.cgi",
+		contentType:"application/x-www-form-urlencoded",
+		data: "Action="+"ParamRemove"
+		    +"&MountPoint="+MountPoint
+			+"&DevName="+DevName
+			+"&DevType="+DevType
+			+"&DevID="+DevID
+			+"&Name="+Name
+			+"&ID="+ID
+			+"&RWType="+RWType
+			+"&DataType="+DataType
+			+"&DataPrecision="+DataPrecision
+			+"&RegAddr="+RegAddr
+			+"&AlarmEnable="+AlarmEnable
+			+"&AlarmUpper="+AlarmUpper
+			+"&AlarmFloor="+AlarmFloor
+			+"&SampleFrequency="+SampleFrequency,
+		dataType: "text",
+		success: function(data){
+				//console.log("Returned data is: %s",data)
+				alert("操作成功！");	
+				$("#param_table_body").empty();//先清除设备列表
+				list_all_params(); //重新获取列表
+				return false;	        
+			},
+		error:function(data){	    	 		
+				//console.log("Returned data is: %s",data)
+				alert("操作失败！");    
+		}    					
+	}); 	
+}             
+</script>
+</head>
+<body>
+<h2 class="tab" mark="" transtag="">串口设备管理</h2>
+<div class="npe_txt">
+	<div class="npe_tips">
+	    <p><strong mark="" transtag="">说明：</strong></p>
+	    <label mark="" transtag="">（1）控制器上的两个UART分别经两个WK2166芯片扩展
+  ，一共有8路RS485串口（CH1~CH8）可用于设备以手拉手的方式外挂，CH9~Ch10为RS232串口类型；<br />
+  （2）每一串手拉手的串口设备必须有一致的波特率及起停位设置；</label>
+  </div>
+    <!-- <strong mark="" style="width:80px;margin:5px;" transtag="">负载均衡:</strong>
+    <strong style="color:#ff6600;" transtag="">开启</strong>
+	<br /> -->
+   <br/>   
+
+	<h3 mark="" transtag="">添加/编辑串口挂载点</h3>
+	</p>
+	<div class="maincontent addblacklist">
+		<ul>
+		<form id="AddMountPoint" name="AddMountPoint">
+			<table class="npe_table" width="100%">
+			<tbody>
+				<tr>
+					<th width="7%"><p>选择挂载点</p> </th>
+				    <th width="18%"><label>
+					<input type="hidden" name="Action" id="Action0" value="AddMountPoint" />
+				      <select style="width:117px;" name="MountPoint" id="MountPoint0">
+				        <option value="CH1" selected="selected">CH1</option>
+				        <option value="CH2">CH2</option>
+				        <option value="CH3">CH3</option>
+				        <option value="CH4">CH4</option>
+				        <option value="CH5">CH5</option>
+				        <option value="CH6">CH6</option>
+				        <option value="CH7">CH7</option>
+				        <option value="CH8">CH8</option>
+				        <option value="CH9">CH9</option>
+				        <option value="CH10">CH10</option>							
+                      </select>
+				    </label></th>
+				    <th width="10%">&nbsp;</th>
+				    <th width="22%">&nbsp;</th>
+				    <th width="43%">&nbsp;</th>
+				</tr>
+				
+				<tr>
+				  <th>波特率</th>
+				  <th width="18%"><select style="width:117px;" name="Baudrate" id="Baudrate">
+				    <option value="1200">1200</option>
+				    <option value="2400">2400</option>
+				    <option value="4800">4800</option>
+				    <option value="9600">9600</option>
+				    <option value="14400">14400</option>
+				    <option value="19200">19200</option>
+				    <option value="38400">38400</option>
+				    <option value="57600">57600</option>
+				    <option value="115200">115200</option>
+                                                                        </select></th>
+				  <th width="10%">&nbsp;</th>
+				  <th>&nbsp;</th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>数据位</th>
+				  <th width="18%"><label>
+				    <select style="width:117px;" name="DataBits" id="DataBits">
+				      <option value="5">5</option>
+				      <option value="6">6</option>
+				      <option value="7">7</option>
+				      <option value="8" selected="selected">8</option>
+                  </select>
+				  </label></th>
+				  <th width="10%">&nbsp;</th>
+				  <th>&nbsp;</th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>奇偶校验</th>
+				  <th width="18%"><select style="width:117px;" name="CheckBits" id="CheckBits">
+				    <option value="None" selected="selected">None</option>
+				    <option value="Odd">Odd</option>
+				    <option value="Even">Even</option>
+				    <option value="Mark">Mark</option>
+				    <option value="Space">Space</option>
+                                                      </select></th>
+				  <th width="10%">&nbsp;</th>
+				  <th>&nbsp;</th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>停止位</th>
+				  <th width="18%"><select style="width:117px;" name="StopBits" id="StopBits">
+				    <option value="1" selected="selected">1</option>
+				    <option value="1.5">1.5</option>
+				    <option value="2">2</option>
+                                                      </select></th>
+				  <th width="10%">&nbsp;</th>
+				  <th>&nbsp;</th>
+			      <th>&nbsp;</th>
+			  </tr>			  
+				<tr>
+				  <td colspan="5">
+					<li>
+					<button class="button_bdeep" id="btnAddMountPoint" mark="" transtag="">确认</button>
+					<button class="button_bdeep" id="btnCanelMountPoint" mark="" transtag="">取消 </button>
+					</li>				  </td>
+		      </tr>
+			</tbody>  
+			</table>
+		  </form>
+        </ul>	
+  	</div>	
+
+
+	<br/> 
+    <h3 mark="" transtag="">挂载点信息</h3>
+	</p>
+    <div class="maincontent addblacklist">
+		<table class="maintable" width="100%">
+			<thead>
+				<tr>
+					<th width="12%" mark="" transtag="">挂载点</th>
+					<th width="12%" mark="" transtag="">波特率</th>         
+					<th width="12%" mark="" transtag="">数据位</th>
+				    <th width="12%" mark="" transtag="">奇偶校验</th>
+				    <th width="12%" mark="" transtag="">停止位</th>
+				    <th width="40%" mark="" transtag="">操作</th>
+				</tr>
+			</thead>
+			<tbody id="mount_point_table_body">			  			  			  	  			  			  			  			  			  
+			</tbody>
+		</table>
+      <ul>
+        
+      </ul>
+  </div>
+  	<br/> 
+	<h3 mark="" transtag="">添加/编辑串口设备</h3>
+	</p>
+	<div class="maincontent addblacklist">
+		<ul>
+		<form id="AddDev" name="AddDev">
+			<table class="npe_table" width="100%">
+			<tbody>
+				<tr>
+					<th width="7%"><p>挂载点</p> </th>
+				    <th width="18%"><label>
+				      <input type="hidden" name="Action" id="Action1" value="AddDev" />
+					  <select style="width:117px;" name="MountPoint" id="MountPoint1">
+				        <option value="CH1" selected="selected">CH1</option>
+				        <option value="CH2">CH2</option>
+				        <option value="CH3">CH3</option>
+				        <option value="CH4">CH4</option>
+				        <option value="CH5">CH5</option>
+				        <option value="CH6">CH6</option>
+				        <option value="CH7">CH7</option>
+				        <option value="CH8">CH8</option>
+				        <option value="CH9">CH9</option>
+				        <option value="CH10">CH10</option>	
+                      </select>
+				    </label></th>
+				    <th width="10%">设备名称</th>
+				    <th width="22%"><input name="DevName" type="text" id="DevName1" datatype="*" nullmsg="不能为空！"/></th>
+				    <th width="43%">&nbsp;</th>
+				</tr>
+				<tr>
+				  <th>设备标识码</th>
+				  <th width="18%"><label>
+				    <input name="DevType" type="text" id="DevType1" datatype="*" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">协议类型</th>
+				  <th><select style="width:117px;" name="Protocal" id="Protocal1">
+				    <option value="Modbus">Modbus</option>
+                                    </select></th>				  
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>设备ID</th>
+				  <th width="18%"><input name="DevID" type="text" id="DevID1" datatype="*" nullmsg="不能为空！"/></th>
+				  <th width="10%">设备地址</th>
+				  <th><input name="DevAddr" type="text" id="DevAddr1" datatype="*" nullmsg="不能为空！"/></th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>无响应次数</th>
+				  <th width="18%"><label>
+				    <input name="NoAck" type="text" id="NoAck1" min="1" max="60" datatype="numrange" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">&nbsp;</th>
+				  <th>&nbsp;</th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <td colspan="5">
+					<li>
+					<button class="button_bdeep" id="btnAddDev" mark="" transtag="">确认</button>
+					<button class="button_bdeep" id="btnCanelDev" mark="" transtag="">取消 </button>
+					</li>				  </td>
+		      </tr>
+			</tbody>  
+			</table>
+		  </form>
+        </ul>	
+  	</div>	
+	
+	<br/> 
+    <h3 mark="" transtag="">串口设备列表</h3>
+    <div class="maintablediv">
+      <table class="maintable" width="100%">
+	        <thead>
+	            <tr>
+	            	<!--<th width="30"  mark="">
+	                	<input type="checkbox" id="checkAll" />
+	             </th>-->
+	                <th width="7%" mark="" transtag="">挂载点</th>
+	                <th width="7%" mark="" transtag="">设备名称</th>
+	                <th width="7%" mark="" transtag="">设备标识码</th>         
+	                <th width="9%" mark="" transtag="">协议类型</th>
+	                <th width="10%" mark="" transtag="">设备ID</th>
+	                 <th width="10%" mark="" transtag="">设备地址</th>
+	                 <th width="10%"  mark="" transtag="">无响应次数</th>
+	                 <th width="40%" mark="" transtag="">操作</th>
+                </tr>
+	        </thead>
+	        <tbody id="devlist_table_body">						
+			</tbody>
+      </table>
+  </div>
+  
+	<br/>   
+	<h3 mark="" transtag="">添加/编辑设备变量</h3>
+	</p>
+	<div class="maincontent addblacklist">
+		<ul>
+		<form id="AddParam" name="AddParam">
+			<table class="npe_table" width="100%">
+			<tbody>
+				<tr>
+					<th width="7%"><p>挂载点</p> </th>
+				    <th width="18%"><label>
+				      <input type="hidden" name="Action" id="Action2" value="AddParam" />
+					  <select style="width:117px;" name="MountPoint" id="MountPoint2">
+                        <option>未选择</option>
+				        <option value="CH1" selected="selected">CH1</option>
+				        <option value="CH2">CH2</option>
+				        <option value="CH3">CH3</option>
+				        <option value="CH4">CH4</option>
+				        <option value="CH5">CH5</option>
+				        <option value="CH6">CH6</option>
+				        <option value="CH7">CH7</option>
+				        <option value="CH8">CH8</option>
+				        <option value="CH9">CH9</option>
+				        <option value="CH10">CH10</option>	
+                      </select>
+				    </label></th>
+				    <th width="10%">设备名称</th>
+			      <th width="22%"><input name="DevName" type="text" id="DevName2" datatype="*" nullmsg="不能为空！"/></th>
+				    <th width="43%">&nbsp;</th>
+				</tr>
+				<tr>
+				  <th>设备标识码</th>
+				  <th width="18%"><label>
+				    <input name="DevType" type="text" id="DevType2" datatype="*" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">设备ID</th>
+				  <th><input name="DevID" type="text" id="DevID2" datatype="*" nullmsg="不能为空！"/></th>				  
+			      <th>&nbsp;</th>
+			  </tr>				
+				<tr>
+				  <th>变量名称</th>
+				  <th width="18%"><label>
+				    <input name="Name" type="text" id="Name2" datatype="*" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">采集频率</th>
+				  <th><input name="SampleFrequency" type="text" id="SampleFrequency2" value="1000" datatype="num" nullmsg="不能为空！"/>ms</th>				  
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>变量标识码</th>
+				  <th width="18%"><input name="ID" type="text" id="ID2" datatype="*" nullmsg="不能为空！"/></th>
+				  <th width="10%">数据类型</th>
+				  <th><select style="width:117px;" name="DataType" id="DataType2">
+				    <option value="Char" selected="selected">Char</option>
+				    <option value="Unsigned Char">Unsigned Char</option>
+				    <option value="Int">Int</option>
+				    <option value="Unsigned Int">Unsigned Int</option>
+				    <option value="Long">Long</option>
+				    <option value="Unsigned Long">Unsigned Long</option>
+				    <option value="Float">Float</option>
+                                                      </select></th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>读写类型</th>
+				  <th width="18%"><label>
+				    <select style="width:117px;" name="RWType" id="RWType2">
+				      <option value="R" selected="selected">R</option>
+				      <option value="W">W</option>
+				      <option value="RW">RW</option>
+                  </select>
+				  </label></th>
+				  <th width="10%">寄存器地址</th>
+				  <th><input name="RegAddr" type="text" id="RegAddr2" datatype="*" nullmsg="不能为空！"/></th>
+			      <th>&nbsp;</th>
+			  </tr>
+				<tr>
+				  <th>数据精度</th>
+				  <th width="18%"><label>
+				    <input name="DataPrecision" type="text" id="DataPrecision2" value="" datatype="*" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">告警使能</th>
+				  <th><label>
+				    <select style="width:117px;" name="AlarmEnable" id="AlarmEnable2">
+                      <option value="False" selected="selected">False</option>
+                      <option value="True">True</option>
+                    </select>
+				  </label></th>
+			      <th>&nbsp;</th>
+			  </tr>		
+				<tr>
+				  <th>告警上限</th>
+				  <th width="18%"><label>
+				    <input name="AlarmUpper" type="text" id="AlarmUpper2" datatype="*" nullmsg="不能为空！"/>
+				  </label></th>
+				  <th width="10%">告警下限</th>
+				  <th><input name="AlarmFloor" type="text" id="AlarmFloor2" datatype="*" nullmsg="不能为空！"/></th>
+			      <th>&nbsp;</th>
+			  </tr>			  			  	  
+				<tr>
+				  <td colspan="5">
+					<li>
+					<button class="button_bdeep" id="btnAddParam" mark="" transtag="">确认</button>
+					<button class="button_bdeep" id="btnCanelParam" mark="" transtag="">取消 </button>
+					</li>				  </td>
+		      </tr>
+			</tbody>  
+			</table>
+		  </form>
+        </ul>	
+  	</div>	  
+  
+	<br/>   
+    <h3 mark="" transtag="">串口设备变量列表</h3>
+    <div class="maintablediv">
+      <table class="maintable" width="100%">
+	        <thead>
+	            <tr>
+	            	<!--<th width="30"  mark="">
+	                	<input type="checkbox" id="checkAll" />
+	             </th>-->
+	                <th width="4%" mark="" transtag="">挂载点</th>
+	                <th width="8%" mark="" transtag="">设备名称</th>
+	                <th width="6%" mark="" transtag="">设备标识码</th>
+	                 <th width="6%" mark="" transtag="">设备ID</th>
+	                 <th width="12%" mark="" transtag="">变量名称</th>
+	                 <th width="7%" mark="" transtag="">变量标识码</th>
+	                 <th width="6%" mark="" transtag="">读写类型</th>
+	                 <th width="6%"  mark="" transtag="">数据类型</th>
+	                 <th width="6%" mark="" transtag="">数据精度</th>
+	                 <th width="5%" mark="" transtag="">寄存器地址</th>
+	                 <th width="4%" mark="" transtag="">告警使能</th>
+	                 <th width="4%" mark="" transtag="">告警上限</th>
+	                 <th width="5%" mark="" transtag="">告警下限</th>
+	                 <th width="5%" mark="" transtag="">采集频率（ms）</th>
+	                 <th width="16%" mark="" transtag="">操作</th>
+	            </tr>
+	        </thead>
+	        <tbody id="param_table_body">					
+			</tbody>
+      </table>
+  </div>
+</div>
+
+</body>
+
+</html>
